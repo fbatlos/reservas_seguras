@@ -12,7 +12,6 @@ import java.lang.NumberFormatException
 
 @ControllerAdvice
 class APIExceptionHandler {
-
     @ExceptionHandler(
         IllegalArgumentException::class
         , NumberFormatException::class

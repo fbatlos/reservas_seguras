@@ -15,6 +15,4 @@ data class Session(
     var usuario: Usuario,
     var fechaExp: LocalDateTime
 ) {
-
-
 }
