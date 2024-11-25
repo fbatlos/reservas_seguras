@@ -6,6 +6,7 @@ import com.es.sessionsecurity.model.Session
 import com.es.sessionsecurity.model.Usuario
 import com.es.sessionsecurity.repository.SessionRepository
 import com.es.sessionsecurity.repository.UsuarioRepository
+import com.es.sessionsecurity.util.CipherUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -33,28 +34,55 @@ class UsuarioService {
             .findByNombre(userLogin.nombre)
             .orElseThrow{NotFoundException("El usuario proporcionado no existe en BDD")}
 
+
+
         // 2 Compruebo nombre y pass
-        if(userBD.password == userLogin.password) {
+        if(userBD.password == CipherUtils.encrypt(userLogin.password,CipherUtils.constKey)) {
             // 3 GENERAR EL TOKEN
             var token: String = ""
-            token = UUID.randomUUID().toString()
+            token = CipherUtils.encrypt(userBD.nombre, CipherUtils.constKey)
 
-            // 4 CREAR UNA SESSION
-            val s: Session = Session(
-                null,
-                token,
-                userBD,
-                LocalDateTime.now().plusMinutes(3)
-            )
+            // 4 Comprobamos y CREAR UNA SESSION
+            val s: Session
+            val sevice = sessionRepository.findByToken(token =token)
 
+            if (sevice.isEmpty) {
+                s = Session(
+                    null,
+                    token,
+                    userBD,
+                    LocalDateTime.now().plusMinutes(3)
+                )
+                sessionRepository.save(s)
+            }else{
+                sevice.get().fechaExp = LocalDateTime.now().plusMinutes(3)
+                sessionRepository.save(sevice.get())
+            }
             // 5 INSERTAMOS EN BDD
-            sessionRepository.save(s)
+
 
             return token
         } else {
             // SI LA CONTRASEÑA NO COINCIDE, LANZAMOS EXCEPCIÓN
             throw NotFoundException("Las credenciales son incorrectas")
         }
+    }
+
+
+    fun alta(usuario: Usuario):Usuario {
+
+        val usurioExiste = usuarioRepository.findByNombre(usuario.nombre)
+
+        if (usurioExiste.isPresent) { throw BadRequestException("El usuario ya existe servidor") }
+
+        val usuarioEncriptado = Usuario(
+            id = usuario.id,
+            nombre = usuario.nombre,
+            password = CipherUtils.encrypt(usuario.password,CipherUtils.constKey),
+        )
+
+        usuarioRepository.save(usuarioEncriptado)
+        return usuario
     }
 
 }

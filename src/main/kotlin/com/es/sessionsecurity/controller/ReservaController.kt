@@ -35,46 +35,40 @@ class ReservaController {
         @PathVariable nombre: String,
         request: HttpServletRequest
     ) : ResponseEntity<List<Reserva>?> {
-
         /*
         COMPROBAR QUE LA PETICIÓN ESTÁ CORRECTAMENTE AUTORIZADA PARA REALIZAR ESTA OPERACIÓN
-
         LLAMAR AL SERVICE PARA REALIZAR LA L.N. Y LA LLAMADA A LA BASE DE DATOS
-         */
-        // CÓDIGO AQUÍ
-
+         CÓDIGO AQUÍ*/
         //cogemos la cookie
         val cookie = request.cookies.find { c: Cookie -> c.name == "tokenSession" }
         val token = cookie?.value
 
-        if (sessionService.checkToken(token)){
+        if (sessionService.checkToken(token,nombre)){
             val reserva = reservaService.getALlReserva(nombre)
             return ResponseEntity<List<Reserva>?>(reserva, HttpStatus.OK)
         }
         // RESPUESTA
         return ResponseEntity<List<Reserva>?>(null, HttpStatus.BAD_REQUEST); // cambiar null por las reservas
-
     }
 
     /*
     INSERTAR UNA NUEVA RESERVA
      */
-    @PostMapping("/")
+    @PostMapping("/{nombre}")
     fun insert(
-        @RequestBody nuevaReserva: Reserva
+        @RequestBody nuevaReserva: Reserva,
+        @PathVariable nombre: String,
+        request: HttpServletRequest
     ) : ResponseEntity<Reserva?>{
 
-        /*
-        COMPROBAR QUE LA PETICIÓN ESTÁ CORRECTAMENTE AUTORIZADA PARA REALIZAR ESTA OPERACIÓN
-         */
-        // CÓDIGO AQUÍ
+        val cookie = request.cookies.find { c: Cookie -> c.name == "tokenSession" }
+        val token = cookie?.value
 
-        /*
-        LLAMAR AL SERVICE PARA REALIZAR LA L.N. Y LA LLAMADA A LA BASE DE DATOS
-         */
-        // CÓDIGO AQUÍ
+        if (sessionService.checkToken(token,nombre)){
 
-        // RESPUESTA
+            return ResponseEntity<Reserva?>(null, HttpStatus.OK);
+
+        }
         return ResponseEntity<Reserva?>(null, HttpStatus.CREATED); // cambiar null por la reserva
     }
 

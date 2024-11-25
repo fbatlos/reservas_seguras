@@ -7,7 +7,9 @@ import javax.crypto.spec.IvParameterSpec
 import java.util.Base64
 
 @Component
-class CipherUtils {
+object CipherUtils {
+
+    const val constKey =  "clave_publica_que_no_cambia"
 
     /**
      * Método para cifrar una cadena usando un cifrado por clave simétrica

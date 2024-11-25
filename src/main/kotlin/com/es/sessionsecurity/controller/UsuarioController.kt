@@ -1,23 +1,27 @@
 package com.es.sessionsecurity.controller
 
+import com.es.sessionsecurity.model.Reserva
 import com.es.sessionsecurity.model.Usuario
+import com.es.sessionsecurity.repository.SessionRepository
+import com.es.sessionsecurity.service.SessionService
 import com.es.sessionsecurity.service.UsuarioService
 import jakarta.servlet.http.Cookie
+import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/usuarios")
 class UsuarioController {
     @Autowired
     private lateinit var usuarioService: UsuarioService
+
+    @Autowired
+    private lateinit var sessionService: SessionService
 
     @PostMapping("/login")
     fun login(
@@ -45,6 +49,24 @@ class UsuarioController {
 
         // RESPUESTA
         return ResponseEntity(mapOf("message" to "login correcto"), HttpStatus.OK)
+    }
+
+    @PostMapping("/alta")
+    fun alta(
+        @RequestBody usuario: Usuario,
+        //@PathVariable("nombre") nombre : String,
+        request: HttpServletRequest
+    ) : ResponseEntity<Usuario?> {
+
+        //val cookie = request.cookies.find { c: Cookie -> c.name == "tokenSession" }
+        //val token = cookie?.value
+
+        //if (sessionService.checkToken(token,nombre)){
+            val usuario = usuarioService.alta(usuario)
+            return ResponseEntity<Usuario?>(usuario, HttpStatus.OK)
+       // }
+        // RESPUESTA
+       // return ResponseEntity<Usuario?>(null, HttpStatus.BAD_REQUEST)
 
     }
 }
