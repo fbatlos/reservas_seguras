@@ -1,6 +1,7 @@
 package com.es.sessionsecurity.error
 
 import com.es.sessionsecurity.error.exception.BadRequestException
+import com.es.sessionsecurity.error.exception.NotAuthorizedException
 import com.es.sessionsecurity.error.exception.NotFoundException
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
@@ -34,6 +35,13 @@ class APIExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     fun handleGeneric(request: HttpServletRequest, e: Exception) : ErrorRespuesta {
+        return ErrorRespuesta(e.message!!, request.requestURI)
+    }
+
+    @ExceptionHandler(NotAuthorizedException::class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseBody
+    fun handleForbidden(request: HttpServletRequest, e: Exception) : ErrorRespuesta {
         return ErrorRespuesta(e.message!!, request.requestURI)
     }
 }
