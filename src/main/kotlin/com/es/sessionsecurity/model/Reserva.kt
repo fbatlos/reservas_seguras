@@ -15,5 +15,5 @@ class Reserva (
     var fechaRegreso: LocalDateTime,
     @ManyToOne
     @JoinColumn(name = "id_usuario")
-    var usuario: Usuario
+    var usuario: Usuario?
 )

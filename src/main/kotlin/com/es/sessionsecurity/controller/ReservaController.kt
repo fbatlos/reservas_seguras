@@ -54,22 +54,22 @@ class ReservaController {
     /*
     INSERTAR UNA NUEVA RESERVA
      */
-    @PostMapping("/{nombre}")
+    @PostMapping("/")
     fun insert(
         @RequestBody nuevaReserva: Reserva,
-        @PathVariable nombre: String,
         request: HttpServletRequest
     ) : ResponseEntity<Reserva?>{
 
         val cookie = request.cookies.find { c: Cookie -> c.name == "tokenSession" }
         val token = cookie?.value
 
-        if (sessionService.checkToken(token,nombre)){
+        if (token == null){
 
-            return ResponseEntity<Reserva?>(null, HttpStatus.OK);
+            return ResponseEntity<Reserva?>(null, HttpStatus.BAD_REQUEST);
 
         }
-        return ResponseEntity<Reserva?>(null, HttpStatus.CREATED); // cambiar null por la reserva
+        val nuevaReserva = reservaService.insert(nuevaReserva , token)
+        return ResponseEntity<Reserva?>(nuevaReserva, HttpStatus.CREATED); // cambiar null por la reserva
     }
 
 }

@@ -1,5 +1,6 @@
 package com.es.sessionsecurity.service
 
+import com.es.sessionsecurity.error.exception.NotAuthorizedException
 import com.es.sessionsecurity.error.exception.NotFoundException
 import com.es.sessionsecurity.model.Session
 import com.es.sessionsecurity.repository.SessionRepository
@@ -27,7 +28,7 @@ class SessionService {
             session = sessionRepository.findByToken(token).orElseThrow{RuntimeException("Token invalido")}
             return session.fechaExp.isAfter(LocalDateTime.now())
         }else{
-            throw Exception("Token invalido")
+            throw NotAuthorizedException("Token invalido")
         }
         //Pr ultimo comprobamos la fecha
 
